@@ -66,7 +66,6 @@ jobs:
         run: >
           pytest tests/
           --browser chromium
-          --headless
           --alluredir=allure-results
           --junit-xml=test-results-shard-${{ matrix.shard }}.xml
           --reruns 2 --reruns-delay 3
@@ -108,6 +107,7 @@ jobs:
       
       - name: Generate Allure Report
         run: |
+          mkdir -p allure-results
           docker pull ghcr.io/allure-framework/allure2:2.30.0 || true
           if docker images ghcr.io/allure-framework/allure2:2.30.0 --format '{{.Repository}}' | grep -q allure; then
             docker run \
@@ -116,6 +116,7 @@ jobs:
               ghcr.io/allure-framework/allure2:2.30.0 allure generate --clean
           else
             echo "Allure Docker image not available, skipping report generation"
+            mkdir -p allure-report
           fi
       
       - name: Upload Allure Report

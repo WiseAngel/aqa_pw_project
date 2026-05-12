@@ -5,7 +5,7 @@ Uses pydantic-settings for strict validation at import time.
 All settings are loaded from .env file or environment variables.
 """
 
-from pydantic import field_validator
+from pydantic import field_validator, ValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,7 +28,9 @@ class Settings(BaseSettings):
         slow_mo: Slow down operations by this many milliseconds
     """
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
+    )
 
     # Application
     base_url: str = ""
@@ -66,7 +68,7 @@ class Settings(BaseSettings):
 
     @field_validator("api_base_url")
     @classmethod
-    def validate_api_url(cls, v: str | None, values) -> str | None:
+    def validate_api_url(cls, v: str | None, info: ValidationInfo) -> str | None:
         """Validate api_base_url or derive from base_url."""
         if v is None:
             return None
