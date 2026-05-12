@@ -5,7 +5,26 @@ on:
   pull_request: { branches: [main] }
 
 jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install uv && uv pip install --system .[dev]
+
+      - name: Run linting
+        run: |
+          ruff check src/ tests/
+          ruff format --check src/ tests/
+          mypy src/
+
   test:
+    needs: lint
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -51,6 +70,7 @@ jobs:
           --alluredir=allure-results
           --junit-xml=test-results-shard-${{ matrix.shard }}.xml
           --reruns 2 --reruns-delay 3
+          --shard=${{ matrix.shard }}/2
           -m "e2e or api or smoke"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}

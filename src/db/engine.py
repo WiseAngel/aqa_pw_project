@@ -15,7 +15,6 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.pool import NullPool
-
 from src.config.settings import settings
 
 
@@ -91,9 +90,7 @@ class DatabaseEngine:
         """
         return self.session_factory()
 
-    async def execute_transaction(
-        self, func: callable, *args: Any, **kwargs: Any
-    ) -> Any:
+    async def execute_transaction(self, func: callable, *args: Any, **kwargs: Any) -> Any:
         """
         Execute function within a database transaction with auto-rollback.
 
