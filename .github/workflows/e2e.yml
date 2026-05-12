@@ -47,7 +47,6 @@ jobs:
         run: >
           pytest tests/
           --browser chromium
-          --headless
           --alluredir=allure-results
           --junit-xml=test-results-shard-${{ matrix.shard }}.xml
           --reruns 2 --reruns-delay 3
