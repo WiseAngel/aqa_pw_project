@@ -1,48 +1,48 @@
 # Business Memory
 
-This directory stores business-related decisions and context for the QA framework.
+Эта директория хранит бизнес-решения и контекст для QA фреймворка.
 
-## Purpose
+## Назначение
 
-Business memory documents contain:
-- Target application domain and niche
-- User personas and their workflows
-- Key business metrics and KPIs
-- Pricing models and economics
+Документы business memory содержат:
+- Домен и нишу целевого приложения
+- User personas и их workflows
+- Ключевые бизнес-метрики и KPIs
+- Pricing models и экономика
 - Regulatory requirements
-- Business rules and constraints
+- Бизнес-правила и ограничения
 
-## Files to Add
+## Файлы для добавления
 
-When starting a new project, create documents here describing:
-1. **Application Overview** - What business problem does the app solve?
-2. **User Journeys** - Critical paths users take through the application
-3. **Business Rules** - Validation rules, workflows, approval chains
-4. **Success Metrics** - What defines a successful test coverage?
+При старте нового проекта создай здесь документы, описывающие:
+1. **Application Overview** — Какую бизнес-проблему решает приложение?
+2. **User Journeys** — Критические пути пользователей через приложение
+3. **Business Rules** — Validation rules, workflows, approval chains
+4. **Success Metrics** — Что определяет успешное test coverage?
 
-## Example Structure
+## Пример структуры
 
 ```markdown
 # [Project Name] Business Context
 
 ## Domain
-[Brief description of the business domain]
+[Краткое описание бизнес-домена]
 
 ## Key Users
-- **Admin**: Manages system configuration
-- **Manager**: Reviews reports and approves requests
-- **End User**: Primary application consumer
+- **Admin**: Управляет конфигурацией системы
+- **Manager**: Проверяет отчёты и утверждает запросы
+- **End User**: Основной потребитель приложения
 
 ## Critical Workflows
-1. User registration and onboarding
-2. [Core business process]
-3. Reporting and analytics
+1. Регистрация и onboarding пользователя
+2. [Основной бизнес-процесс]
+3. Отчётность и аналитика
 
 ## Business Rules
-- [Rule 1]
-- [Rule 2]
+- [Правило 1]
+- [Правило 2]
 ```
 
 ---
 
-> 💡 **Tip**: Keep business memory updated as requirements evolve. All AI assistants should read this before generating tests.
+> 💡 **Совет**: Актуализируй business memory по мере изменения требований. Все AI-ассистенты должны читать этот файл перед генерацией тестов.

@@ -1,26 +1,26 @@
 # Iterations Log
 
-This directory tracks development iterations and sprint progress for the QA framework.
+Эта директория отслеживает итерации разработки и прогресс спринтов для QA фреймворка.
 
-## Purpose
+## Назначение
 
-Iteration logs provide:
-- Chronological record of changes
-- Sprint goals and outcomes
+Логи итераций предоставляют:
+- Хронологическую запись изменений
+- Sprint goals и outcomes
 - Technical debt tracking
 - Lessons learned
-- Decision history with context
+- Decision history с контекстом
 
-## File Naming Convention
+## Соглашение по именованию файлов
 
-Use ISO date format for iteration documents:
+Используй ISO date format для документов итераций:
 ```
 YYYY-MM-DD_iteration-N_description.md
 ```
 
-Example: `2026-05-12_iteration-1_framework-setup.md`
+Пример: `2026-05-12_iteration-1_framework-setup.md`
 
-## Template Structure
+## Шаблон структуры
 
 ```markdown
 # Iteration N - [Date]
@@ -61,4 +61,4 @@ Example: `2026-05-12_iteration-1_framework-setup.md`
 
 ---
 
-> 💡 **Tip**: Review previous iterations before starting new work to maintain continuity and avoid repeating mistakes.
+> 💡 **Совет**: Просматривай предыдущие итерации перед началом новой работы для сохранения непрерывности и избежания повторения ошибок.

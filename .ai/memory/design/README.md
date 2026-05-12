@@ -1,26 +1,26 @@
 # Design Memory
 
-This directory stores UI/UX decisions and design system documentation for the QA framework.
+Эта директория хранит UI/UX-решения и документацию design system для QA фреймворка.
 
-## Purpose
+## Назначение
 
-Design memory documents contain:
+Документы design memory содержат:
 - Component library specifications
 - Design tokens (colors, typography, spacing)
 - Responsive breakpoints
 - Accessibility requirements (WCAG level)
-- Interaction patterns and animations
+- Interaction patterns и animations
 - Visual regression testing baselines
 
-## Files to Add
+## Файлы для добавления
 
-When starting a new project, create documents here describing:
-1. **Design System** - Link to Figma/Sketch libraries
-2. **Component Catalog** - Reusable UI components with states
-3. **Responsive Rules** - Breakpoints and layout behavior
-4. **Accessibility Standards** - Required WCAG compliance level
+При старте нового проекта создай здесь документы, описывающие:
+1. **Design System** — Ссылка на Figma/Sketch libraries
+2. **Component Catalog** — Reusable UI компоненты с состояниями
+3. **Responsive Rules** — Breakpoints и поведение layout
+4. **Accessibility Standards** — Требуемый уровень WCAG compliance
 
-## Example Structure
+## Пример структуры
 
 ```markdown
 # [Project Name] Design Context
@@ -53,4 +53,4 @@ When starting a new project, create documents here describing:
 
 ---
 
-> 💡 **Tip**: Use this documentation to build accurate Page Object models and visual regression tests.
+> 💡 **Совет**: Используй эту документацию для построения точных Page Object моделей и visual regression тестов.
