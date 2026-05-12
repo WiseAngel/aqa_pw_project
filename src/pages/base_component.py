@@ -5,12 +5,8 @@ All UI components should inherit from this class to get consistent
 locator handling and expect() wrappers.
 """
 
-from typing import TYPE_CHECKING
 
 from playwright.sync_api import Locator, Page, expect
-
-if TYPE_CHECKING:
-    from tests.components.base_component import BaseComponent
 
 
 class BaseComponent:
