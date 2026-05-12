@@ -32,6 +32,7 @@ class TestIntegration:
             password="test_password",
         )
 
+    @pytest.mark.api
     def test_get_posts_from_api(self, api_client):
         """Проверка получения списка постов из API."""
         logger.info("Выполняем запрос к API для получения постов")
@@ -48,6 +49,7 @@ class TestIntegration:
 
         logger.info(f"Успешно получено {len(data)} постов")
 
+    @pytest.mark.api
     def test_get_single_post(self, api_client):
         """Проверка получения одного поста по ID."""
         logger.info("Запрашиваем пост с ID=1")
@@ -63,6 +65,7 @@ class TestIntegration:
 
         logger.info(f"Получен пост: {post['title'][:30]}...")
 
+    @pytest.mark.api
     def test_create_post_via_api(self, api_client):
         """Проверка создания нового поста через API."""
         logger.info("Создаем новый пост через API")
@@ -101,6 +104,7 @@ class TestIntegration:
 
         logger.info("Подключение к БД успешно (mock)")
 
+    @pytest.mark.api
     def test_integration_api_and_logging(self, api_client):
         """Комплексный тест: API + логирование."""
         logger.info("Запуск комплексного интеграционного теста")

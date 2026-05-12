@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     def set_default_base_url(cls, v: str) -> str:
         """Set default base_url if empty or not provided."""
         if not v:
-            return "http://localhost:3000"
+            return "https://demo.playwright.dev/todomvc"
         return v
 
     # Database
