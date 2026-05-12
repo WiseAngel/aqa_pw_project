@@ -5,7 +5,7 @@ Provides async database connection pool using SQLAlchemy 2.x + asyncpg.
 Supports transaction isolation with auto-rollback for test isolation.
 """
 
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from typing import Any
 
 from sqlalchemy.ext.asyncio import (
@@ -88,10 +88,10 @@ class DatabaseEngine:
             async with db.session() as session:
                 result = await session.execute(query)
         """
-        return self.session_factory()
+        return self.session_factory()  # type: ignore[return-value]
 
     async def execute_transaction(
-        self, func: callable, *args: Any, **kwargs: Any
+        self, func: Callable[..., Any], *args: Any, **kwargs: Any
     ) -> Any:
         """
         Execute function within a database transaction with auto-rollback.
@@ -106,7 +106,7 @@ class DatabaseEngine:
         Returns:
             Result from func execution
         """
-        async with self.session() as session:
+        async with self.session_factory() as session:
             try:
                 result = await func(session, *args, **kwargs)
                 await session.commit()

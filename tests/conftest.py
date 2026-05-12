@@ -20,6 +20,26 @@ from playwright.sync_api import BrowserContext, Page, expect
 from src.config.settings import settings
 from src.db.engine import DatabaseEngine
 
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Add custom command-line options."""
+    parser.addoption(
+        "--headless",
+        action="store_true",
+        default=None,
+        help="Run browsers in headless mode",
+    )
+
+
+@pytest.fixture(scope="session")
+def browser_type_launch_args(request: pytest.FixtureRequest) -> dict:
+    """Override browser launch args to support --headless flag."""
+    headless = request.config.getoption("--headless")
+    # Use CLI arg if provided, otherwise fall back to settings
+    if headless is not None:
+        return {"headless": headless}
+    return {"headless": settings.headless}
+
 # Configure structlog for JSON logging in CI
 structlog.configure(
     processors=[
