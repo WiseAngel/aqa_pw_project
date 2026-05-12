@@ -17,11 +17,8 @@ from typing import Any
 import pytest
 import structlog
 from playwright.sync_api import BrowserContext, Page, expect
-from pytest import FixtureRequest
-
 from src.config.settings import settings
 from src.db.engine import DatabaseEngine
-
 
 # Configure structlog for JSON logging in CI
 structlog.configure(
@@ -104,7 +101,7 @@ def context(context: BrowserContext) -> BrowserContext:
 
 
 @pytest.fixture
-def page(page: Page, request: FixtureRequest) -> Page:
+def page(page: Page, request: pytest.FixtureRequest) -> Page:
     """
     Override default page with enhanced failure handling.
 

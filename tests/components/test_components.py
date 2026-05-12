@@ -4,7 +4,6 @@
 Проверяют изолированные компоненты интерфейса: кнопки, формы, навигацию.
 """
 
-import pytest
 from playwright.sync_api import Page, expect
 
 

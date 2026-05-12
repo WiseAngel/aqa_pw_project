@@ -1,55 +1,31 @@
-# AI memory directory (except examples and templates)
-.ai/
-!.ai/memory/**/*.md
+```
+# Compiled Python files
+*.pyc
+__pycache__/
 
-# Logs and temp files
+# Environment variables
+.env
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Logs and temporary files
 *.log
 *.tmp
 *.swp
-
-# Environment (keep .env.example)
-.env
-.env.local
-*.env.*
-!.env.example
 
 # Editors
 .vscode/
 .idea/
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-
-# Dependencies
-.venv/
-venv/
-.env/
-node_modules/
-
-# Build artifacts
-dist/
-build/
-*.egg-info/
-src/*.egg-info/
+# Coverage reports
 .coverage
 coverage/
 htmlcov/
+
+# Python cache
 .mypy_cache/
 .pytest_cache/
-.tox/
-.cover/
-.nox/
-
-# Playwright artifacts
-playwright-report/
-test-results/
-blob-report/
-
-# OS generated files
-.DS_Store
-Thumbs.db
+```

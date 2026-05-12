@@ -116,15 +116,17 @@ allure serve allure-results
 ├── .github/workflows/           # 🔄 CI pipeline
 │   └── ci.yml                   # GitHub Actions workflow
 ├── scripts/tms_reporter.py      # 📤 JUnit → TMS sync
-├── src/                         # 🔌 Исходный код (clients, utils)
+├── src/                         # 🔌 Исходный код (clients, utils, pages)
 │   ├── api/                     # API клиенты
 │   │   └── clients.py           # HTTPX async client
 │   ├── db/                      # Database engine
 │   │   └── engine.py            # SQLAlchemy engine
 │   ├── config/                  # Конфигурация
 │   │   └── settings.py          # Pydantic settings
-│   └── utils/                   # Утилиты
-│       └── logger.py            # Централизованное логирование
+│   ├── utils/                   # Утилиты
+│   │   └── logger.py            # Централизованное логирование
+│   └── pages/                   # 🧩 Page Object компоненты
+│       └── base_component.py    # Базовый класс для всех компонентов
 ├── tests/                       # 🧪 Тесты
 │   ├── components/              # 🧩 UI компоненты (кнопки, формы, навигация)
 │   │   └── test_components.py   # Тесты компонентов
