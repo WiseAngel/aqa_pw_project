@@ -1,72 +1,72 @@
 # 🎭 Playwright QA Automation Framework
 
-> Production-ready E2E testing framework with Playwright, pytest, API/DB integration, and full CI/CD pipeline.
+> Production-ready фреймворк для E2E-тестирования на базе Playwright, pytest с интеграцией API/DB и полным CI/CD циклом.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Быстрый старт
 
-### Prerequisites
+### Необходимые требования
 - Python 3.11+
-- Docker & Docker Compose (for CI/CD)
-- Node.js (optional, for frontend testing)
+- Docker & Docker Compose (для CI/CD)
+- Node.js (опционально, для frontend-тестирования)
 
-### Installation
+### Установка
 
 ```bash
-# 1. Clone repository and navigate to it
+# 1. Клонируйте репозиторий и перейдите в него
 git clone <repo-url> playwright-qa
 cd playwright-qa
 
-# 2. Install uv (if not already installed)
+# 2. Установите uv (если ещё не установлен)
 pip install uv
 
-# 3. Create virtual environment
+# 3. Создайте виртуальное окружение
 uv venv
 
-# 4. Activate virtual environment
-# For PowerShell:
+# 4. Активируйте окружение
+# Для PowerShell:
 .\.venv\Scripts\Activate.ps1
-# For CMD:
+# Для CMD:
 # .venv\Scripts\activate.bat
-# For Bash/Zsh:
+# Для Bash/Zsh:
 # source .venv/bin/activate
 
-# 5. Install dependencies (including dev dependencies)
+# 5. Установите зависимости (включая dev-зависимости)
 uv pip install -e ".[dev]"
 
-# 6. Install Playwright browsers
+# 6. Установите браузеры Playwright
 playwright install chromium
 
-# 7. Copy environment configuration
+# 7. Скопируйте пример конфигурации
 cp .env.example .env
-# Or in PowerShell, if cp doesn't work:
+# Или в PowerShell, если cp не работает:
 # Copy-Item .env.example .env
 ```
 
-### Run Tests
+### Запуск тестов
 
 ```bash
-# Run all tests
+# Все тесты
 pytest
 
-# Run smoke tests only
+# Только smoke-тесты
 pytest -m smoke
 
-# Run with UI (headed mode)
+# В режиме с UI (headed mode)
 pytest --headless=false
 
-# Run in parallel (local only)
+# Параллельный запуск (локально)
 pytest -n auto
 
-# Generate Allure report
+# Генерация Allure отчёта
 pytest --alluredir=allure-results
 allure serve allure-results
 ```
 
 ---
 
-## 🏗 Architecture
+## 🏗 Архитектура
 
 ```
 ┌─────────────────┐     ┌──────────────┐     ┌─────────────┐
@@ -82,69 +82,68 @@ allure serve allure-results
         └──────────┘   └──────────┘   └──────────┘
 ```
 
-**Stack:**
+**Стек:**
 - **Core:** Python 3.11+, pytest + pytest-playwright
-- **Config:** pydantic-settings + .env (strict validation)
+- **Config:** pydantic-settings + .env (строгая валидация)
 - **API Client:** httpx (async)
 - **Database:** SQLAlchemy 2.x + asyncpg
 - **Test Data:** factory_boy + faker
-- **Logging:** structlog (JSON in CI)
+- **Logging:** structlog (JSON в CI)
 - **Reporting:** Allure + Playwright Trace Viewer
 
 ---
 
-## 📁 Project Structure
+## 📁 Структура проекта
 
 ```
-/workspace/                      # 🔝 ROOT PROJECT DIRECTORY
-├── .ai/                         # 🧠 Cross-AI memory (all assistants read)
+/workspace/                      # 🔝 КОРНЕВАЯ ДИРЕКТОРИЯ ПРОЕКТА
+├── .ai/                         # 🧠 Кросс-AI память (читают все ассистенты)
 │   └── memory/
-│       ├── README.md            # Memory usage guide
-│       ├── business/            # Business decisions (niche, prices, economics)
+│       ├── README.md            # Инструкция по работе с памятью
+│       ├── business/            # Бизнес-решения (ниша, цены, экономика)
 │       │   └── .gitkeep
-│       ├── tech/                # Technical decisions (stack, DB, API) + [MEMORY]
+│       ├── tech/                # Технические решения (стек, БД, API) + [Память]
 │       │   ├── .gitkeep
-│       │   └── 2026-05-12_playwright-qa-framework-setup.md  # ⭐ MEMORY: Framework setup
-│       ├── design/              # UI/UX decisions, design tokens
+│       │   └── 2026-05-12_playwright-qa-framework-setup.md  # ⭐ ПАМЯТЬ: Настройка фреймворка
+│       ├── design/              # UI/UX-решения, дизайн-токены
 │       │   └── .gitkeep
-│       └── iterations/          # Iteration log
+│       └── iterations/          # Лог итераций
 │           └── .gitkeep
-├── .cursor/                     # Cursor-specific settings
-│   └── prompts/                 # AI prompt templates
+├── .cursor/                     # Cursor-специфичные настройки
+│   └── prompts/                 # Шаблоны промптов для AI
 │       ├── README.md
 │       └── new-chat-template.md
-├── .github/workflows/e2e.yml    # 🔄 CI: matrix sharding, cache, retry, allure, tms-sync
-├── scripts/tms_reporter.py      # 📤 JUnit → TMS REST API sync
-├── src/                         # 🔌 Core clients and configs
-│   ├── api/clients.py           # HTTPX async API client
-│   ├── db/engine.py             # SQLAlchemy async engine
+├── .github/workflows/e2e.yml    # 🔄 CI pipeline
+├── scripts/tms_reporter.py      # 📤 JUnit → TMS sync
+├── src/                         # 🔌 Core clients
+│   ├── api/clients.py           # HTTPX async client
+│   ├── db/engine.py             # SQLAlchemy engine
 │   └── config/settings.py       # Pydantic settings
 ├── tests/
-│   ├── components/              # 🧩 Component-based POM
-│   │   └── base_component.py    # Base component class
-│   ├── e2e/                     # 🎬 Business scenario tests
-│   ├── fixtures/                # 🔧 Test data factories
-│   │   └── factories.py         # factory_boy factories
-│   └── conftest.py              # 📦 Global fixtures, logging
-├── artifacts/                   # Workspace (development artifacts)
+│   ├── components/              # 🧩 UI components
+│   │   └── base_component.py    # Base class
+│   ├── e2e/                     # 🎬 E2E tests
+│   ├── fixtures/                # 🔧 Factories
+│   │   └── factories.py         # factory_boy
+│   └── conftest.py              # 📦 Fixtures
+├── artifacts/                   # Рабочая площадка (артефакты разработки)
 │   ├── README.md
 │   ├── decisions/               # ADR
 │   ├── flows/                   # User flows
 │   ├── mockups/                 # Wireframes
-│   ├── pages/                   # HTML prototypes
-│   └── thinking/                # Manifests, research
-├── .cursorrules                 # 📏 AI generation rules
-├── .cursorrules.txt             # (compatibility duplicate)
-├── Dockerfile                   # 🐳 Playwright official image
-├── pyproject.toml               # 📦 Dependencies + tool configs
-├── AGENTS.md                    # 🤖 AI assistant rules
-├── PROJECT_GUIDE.md             # 📘 Full project guide
-└── .env.example                 # 🔑 Environment template
+│   ├── pages/                   # HTML-прототипы
+│   └── thinking/                # Размышления, манифесты
+├── AGENTS.md                    # 🤖 AI rules
+├── Dockerfile                   # 🐳 Container
+├── pyproject.toml               # 📦 Dependencies
+├── .cursorrules                 # Правила для ИИ-генерации
+├── .cursorrules.txt             # (дубль для совместимости)
+└── .env.example                 # 🔑 Config template
 ```
 
 ---
 
-## 🧪 Testing Patterns
+## 🧪 Паттерны тестирования
 
 ### Component-Based POM
 
@@ -162,7 +161,7 @@ class HeaderComponent(BaseComponent):
     def click_logo(self):
         self.logo.click()
 
-# Usage in test
+# Использование в тесте
 def test_navigation(page):
     header = HeaderComponent(page)
     header.expect_visible()
@@ -177,14 +176,14 @@ from tests.fixtures.factories import UserFactory
 
 @pytest.mark.asyncio
 async def test_user_flow(page):
-    # Create user via API
+    # Создание пользователя через API
     user_data = UserFactory.build()
     
     async with APIClient() as api:
         response = await api.post("/users", json=user_data)
         user_id = response.json()["id"]
     
-    # Continue with UI test using created user
+    # Продолжение UI теста с созданным пользователем
     page.goto(f"/users/{user_id}")
 ```
 
@@ -193,7 +192,7 @@ async def test_user_flow(page):
 ```python
 async def test_with_db(db_session):
     async with db_session as session:
-        # All changes auto-rollback after test
+        # Все изменения автоматически откатываются после теста
         result = await session.execute(query)
 ```
 
@@ -201,38 +200,38 @@ async def test_with_db(db_session):
 
 ## 🔄 CI/CD Pipeline
 
-### GitHub Actions Features
-- **Matrix Sharding:** Split tests across 2 runners (free tier optimized)
-- **Caching:** pip dependencies + Playwright browsers
-- **Retry Logic:** `--reruns 2 --reruns-delay 3` for flaky tests
-- **Artifacts:** Screenshots, traces, Allure results
-- **TMS Sync:** Auto-push results to external TMS via REST API
+### Возможности GitHub Actions
+- **Matrix Sharding:** Разделение тестов на 2 runner'а (оптимизация для free tier)
+- **Caching:** pip зависимости + браузеры Playwright
+- **Retry Logic:** `--reruns 2 --reruns-delay 3` для flaky тестов
+- **Artifacts:** Скриншоты, traces, Allure результаты
+- **TMS Sync:** Авто-отправка результатов во внешнюю TMS через REST API
 
-### Workflow Jobs
-1. **test:** Parallel shards with `fail-fast: false`
-2. **report:** Generate Allure HTML report
-3. **tms-sync:** Push results to TMS (TestRail/Qase/etc.)
+### Jobs workflow
+1. **test:** Параллельные шарды с `fail-fast: false`
+2. **report:** Генерация HTML отчёта Allure
+3. **tms-sync:** Отправка результатов в TMS (TestRail/Qase/etc.)
 
 ---
 
-## 📊 Reporting
+## 📊 Отчётность
 
 ### Allure Report
 ```bash
-# Local
+# Локально
 allure serve allure-results
 
-# CI: Deployed to GitHub Pages
+# CI: Деплой на GitHub Pages
 ```
 
 ### Playwright Trace Viewer
 ```bash
-# View traces from failed tests
+# Просмотр traces из упавших тестов
 playwright show-trace trace.zip
 ```
 
 ### TMS Integration
-Mark tests with TMS IDs:
+Маркировка тестов TMS ID:
 ```python
 @pytest.mark.tms_id("TC-123")
 def test_login():
@@ -241,60 +240,59 @@ def test_login():
 
 ---
 
-## ⚙️ Configuration
+## ⚙️ Конфигурация
 
-### Environment Variables (.env)
+### Переменные окружения (.env)
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `BASE_URL` | Application URL | `http://localhost:3000` |
-| `API_BASE_URL` | API URL (optional) | Derived from BASE_URL |
-| `BROWSER` | Browser type | `chromium` |
-| `HEADLESS` | Headless mode | `true` |
-| `TIMEOUT` | Default timeout (ms) | `30000` |
-| `DB_HOST` | Database host | `localhost` |
-| `DB_PORT` | Database port | `5432` |
-| `DB_NAME` | Database name | `qa_test` |
-| `DB_USER` | Database user | `qa` |
-| `DB_PASSWORD` | Database password | `qa_pass` |
-| `API_TOKEN` | API auth token | — |
-| `TMS_API_URL` | TMS API URL | — |
-| `TMS_TOKEN` | TMS auth token | — |
+| `BASE_URL` | URL приложения | `http://localhost:3000` |
+| `API_BASE_URL` | URL API (опционально) | Derived from BASE_URL |
+| `BROWSER` | Тип браузера | `chromium` |
+| `HEADLESS` | Headless режим | `true` |
+| `TIMEOUT` | Таймаут по умолчанию (мс) | `30000` |
+| `DB_HOST` | Хост базы данных | `localhost` |
+| `DB_PORT` | Порт базы данных | `5432` |
+| `DB_NAME` | Имя базы данных | `qa_test` |
+| `DB_USER` | Пользователь БД | `qa` |
+| `DB_PASSWORD` | Пароль БД | `qa_pass` |
+| `API_TOKEN` | Токен аутентификации API | — |
+| `TMS_API_URL` | URL API TMS | — |
+| `TMS_TOKEN` | Токен аутентификации TMS | — |
 
 ---
 
-## 🎯 Key Principles
+## 🎯 Ключевые принципы
 
-1. **No Global State:** All browser/context/browser managed via fixtures
-2. **No time.sleep():** Use Playwright auto-waits and expect()
-3. **Component-Based:** Reusable UI components, not page objects
-4. **API First:** Test data via API, not UI
-5. **Auto-Rollback:** DB transactions rollback after each test
-6. **No Hardcoding:** All data parameterized or generated
+1. **No Global State:** Весь browser/context/page управляется через фикстуры
+2. **No time.sleep():** Использовать Playwright auto-waits и expect()
+3. **Component-Based:** Переиспользуемые UI компоненты, не page objects
+4. **API First:** Тестовые данные через API, не UI
+5. **Auto-Rollback:** DB транзакции откатываются после каждого теста
+6. **No Hardcoding:** Все данные параметризированы или генерируются
 7. **Strict Typing:** mypy --strict enforced
-8. **CI Optimized:** Shard-based parallelism (no xdist in CI)
+8. **CI Optimized:** Shard-based parallelism (без xdist в CI)
 
 ---
 
-## 📈 Metrics
+## 📈 Метрики
 
 | Metric | Target |
 |--------|--------|
-| Test execution time | <10 min (full suite) |
+| Время выполнения тестов | <10 мин (полный набор) |
 | Flaky rate | <2% |
 | Code coverage | >80% (business logic) |
 | CI success rate | >95% |
 
 ---
 
-## 🔗 Documentation
+## 🔗 Документация
 
-- [AGENTS.md](./AGENTS.md) — AI assistant rules
-- [PROJECT_GUIDE.md](./PROJECT_GUIDE.md) — Project workflow guide
-- [.cursorrules](./.cursorrules) — AI code generation constraints
+- [AGENTS.md](./AGENTS.md) — Правила для AI-ассистентов
+- [.cursorrules](./.cursorrules) — Ограничения для AI-генерации кода
 
 ---
 
-## 📄 License
+## 📄 Лицензия
 
 MIT License
