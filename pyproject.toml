@@ -64,10 +64,4 @@ disallow_untyped_defs = true
 mypy_path = "."
 packages = ["src"]
 
-[tool.pytest.ini_options.env]
-# Переменные окружения для тестов (можно переопределить в .env)
-BASE_URL = "https://demo.playwright.dev/todomvc"
-API_BASE_URL = "https://jsonplaceholder.typicode.com"
-BROWSER = "chromium"
-HEADLESS = "true"
-TIMEOUT = "30000"
+# Default env vars are set in conftest.py or .env file

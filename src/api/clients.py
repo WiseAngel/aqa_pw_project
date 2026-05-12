@@ -8,6 +8,7 @@ and error handling.
 from typing import Any
 
 import httpx
+
 from src.config.settings import settings
 
 
@@ -76,9 +77,7 @@ class APIClient:
             raise RuntimeError("Client not initialized. Use async context manager.")
         return await self._client.get(path, params=params)
 
-    async def post(
-        self, path: str, json: dict[str, Any] | None = None
-    ) -> httpx.Response:
+    async def post(self, path: str, json: dict[str, Any] | None = None) -> httpx.Response:
         """
         Make POST request.
 
@@ -93,9 +92,7 @@ class APIClient:
             raise RuntimeError("Client not initialized. Use async context manager.")
         return await self._client.post(path, json=json)
 
-    async def put(
-        self, path: str, json: dict[str, Any] | None = None
-    ) -> httpx.Response:
+    async def put(self, path: str, json: dict[str, Any] | None = None) -> httpx.Response:
         """Make PUT request."""
         if not self._client:
             raise RuntimeError("Client not initialized. Use async context manager.")

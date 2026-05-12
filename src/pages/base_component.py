@@ -5,7 +5,6 @@ All UI components should inherit from this class to get consistent
 locator handling and expect() wrappers.
 """
 
-
 from playwright.sync_api import Locator, Page, expect
 
 

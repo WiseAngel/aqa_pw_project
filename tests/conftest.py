@@ -40,6 +40,7 @@ def browser_type_launch_args(request: pytest.FixtureRequest) -> dict:
         return {"headless": headless}
     return {"headless": settings.headless}
 
+
 # Configure structlog for JSON logging in CI
 structlog.configure(
     processors=[
@@ -111,12 +112,10 @@ def context(context: BrowserContext) -> BrowserContext:
     - Extra HTTP headers (auth token)
     """
     context.set_default_timeout(settings.timeout)
-    
+
     if settings.api_token:
-        context.set_extra_http_headers({
-            "Authorization": f"Bearer {settings.api_token}"
-        })
-    
+        context.set_extra_http_headers({"Authorization": f"Bearer {settings.api_token}"})
+
     return context
 
 
@@ -128,16 +127,13 @@ def page(page: Page, request: pytest.FixtureRequest) -> Page:
     Captures:
     - Screenshot on failure
     - Console logs on failure
-    
-    Marks test as flaky if retry succeeds.
+
+    Note: Tests must explicitly navigate to pages with page.goto(url)
     """
-    # Set base URL
-    page.goto(settings.base_url)
-    
     yield page
-    
+
     # If test failed, capture diagnostic info
-    if request.node.rep_call.failed if hasattr(request.node, "rep_call") else False:
+    if hasattr(request.node, "rep_call") and request.node.rep_call.failed:
         screenshot_name = f"screenshots/{request.node.name}.png"
         page.screenshot(path=screenshot_name)
         logger.error("Test failed", screenshot=screenshot_name)
@@ -148,7 +144,7 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo) -> Any:
     """Capture test outcome for use in fixtures."""
     outcome = yield
     report = outcome.get_result()
-    
+
     if report.when == "call":
         item.rep_call = report
     elif report.when == "setup":
