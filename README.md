@@ -1,238 +1,265 @@
-# 🚗 Надо — CRM для автобизнеса
+# 🎭 Playwright QA Automation Framework
 
-> Простая, дешёвая, узкоспециализированная CRM для малого автобизнеса (автосервисы, автомойки, детейлинг, автомагазины).
-> Одна подписка — всё включено: мессенджеры, аналитика, автонапоминания, воронка услуг.
-
----
-
-## 🎯 Миссия
-
-Малый бизнес переплачивает за функции, которые не использует. Мы делаем иначе — **только то, что нужно конкретной нише**, без лишнего, без переплат.
-
-Три кита:
-1. **Просто**: владелец разбирается за 15 минут без инструкций.
-2. **Дёшево**: 3–5 тыс. ₽/мес, окупается возвратом 1 клиента.
-3. **Всё включено**: мессенджеры, почта, аналитика, напоминания — без доплат.
+> Production-ready E2E testing framework with Playwright, pytest, API/DB integration, and full CI/CD pipeline.
 
 ---
 
-## 👥 Целевая аудитория
+## 🚀 Quick Start
 
-- Владельцы независимых автосервисов / моек / детейлинг-центров / автомагазинов (1–10 сотрудников).
-- Старт — **Владивосток** (часовой пояс +10, японские праворульные авто), далее РФ.
-- Боли: потеря клиентов, отсутствие контроля, лоскутная автоматизация, переплата за «комбайны».
+### Prerequisites
+- Python 3.11+
+- Docker & Docker Compose (for CI/CD)
+- Node.js (optional, for frontend testing)
 
----
-
-## 🧩 Ядро MVP
-
-- [x] Скелет backend (FastAPI + PostgreSQL + Celery + Alembic + RLS)
-- [ ] Аутентификация + роли (владелец / мастер / администратор)
-- [ ] База клиентов + автомобили + история визитов
-- [ ] Заказ-наряды: создание в 2 клика, статусы, расчёт стоимости
-- [ ] Воронка услуг: канбан + автонапоминания (ТО, замена масла, сезонная резина)
-- [ ] Мессенджеры в одном окне: Telegram, WhatsApp, VK, Max
-- [ ] Дашборд: выручка, активные заказы, обращения, готовые
-- [ ] Аналитика: цели, источники клиентов, отчёт по сотрудникам / ЗП
-
----
-
-## 🏗 Архитектура
-
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   React     │────▶│   FastAPI    │────▶│ PostgreSQL  │
-│   Frontend  │     │   Backend    │     │  + RLS/152  │
-└─────────────┘     └──────────────┘     └─────────────┘
-                          │
-                          ▼
-                    ┌──────────────┐
-                    │    Celery    │
-                    │  + Redis     │
-                    └──────────────┘
-                          │
-              ┌───────────┼─────────┬──────────┐
-              ▼           ▼         ▼          ▼
-          Telegram    WhatsApp     VK         Max
-```
-
-**Стек:**
-- Backend: Python 3.11 + FastAPI + SQLAlchemy 2.x + Pydantic v2
-- Worker: Celery + Redis
-- Frontend: React + Vite + TypeScript + Tailwind + shadcn/ui (планируется)
-- Database: PostgreSQL 15 + JSONB + RLS (мультиарендность)
-- Infra: Docker + Docker Compose + GitHub Actions
-- Compliance: 152-ФЗ (данные в РФ, hash телефонов, soft delete)
-
----
-
-## 🚀 Быстрый старт
-
-### Предварительные требования
-- Docker & Docker Compose
-- Python 3.11+ (для локальной разработки backend)
-- Node.js 20+ (для frontend, когда появится)
-
-### Запуск через Docker Compose
+### Installation
 
 ```bash
-git clone <repo-url> crm
-cd crm
+# Clone repository
+git clone <repo-url> playwright-qa
+cd playwright-qa
 
-# Поднять все сервисы
-docker compose up -d
-docker compose ps
-docker compose logs -f backend
-```
-
-Сервисы:
-- **Backend API** → http://localhost:8000
-- **Swagger UI** → http://localhost:8000/docs
-- **PostgreSQL** → localhost:5432 (db: `nado_crm`, user/pass: `postgres/postgres`)
-- **Redis** → localhost:6379
-
-### Локальная разработка backend
-
-```bash
-cd src/backend
-
+# Install dependencies
 pip install uv
 uv pip install -e ".[dev]"
 
+# Install Playwright browsers
+playwright install chromium
+
+# Copy environment config
 cp .env.example .env
-
-alembic upgrade head
-
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Тесты
+### Run Tests
 
 ```bash
-cd src/backend
+# Run all tests
 pytest
+
+# Run smoke tests only
+pytest -m smoke
+
+# Run with UI (headed mode)
+pytest --headless=false
+
+# Run in parallel (local only)
+pytest -n auto
+
+# Generate Allure report
+pytest --alluredir=allure-results
+allure serve allure-results
 ```
 
 ---
 
-## 📁 Структура проекта
+## 🏗 Architecture
 
 ```
-crm/
-├── AGENTS.md                  # ⭐ Правила работы AI-ассистентов
-├── PROJECT_GUIDE.md           # Руководство по проекту (для людей и AI)
-├── README.md                  # Этот файл
-├── docker-compose.yml
-│
-├── .cursor/prompts/           # Шаблоны промптов для Cursor
-├── .ai/memory/                # Долговременная память (бизнес/тех/дизайн/итерации)
-│
-├── docs/                      # Концептуальные документы
-│   ├── 01-concept.md          # Философия, ЦА, метрики
-│   ├── 03-mvp-spec.md         # Функциональные требования
-│   └── 04-ui-modules.md       # Описание UI-модулей по прототипу
-│
-├── artifacts/                 # Рабочая площадка (черновики, прототипы, ADR)
-│   ├── thinking/              # Размышления и манифесты
-│   ├── pages/                 # HTML-прототипы (актуальный — 8may2026.html)
-│   ├── mockups/               # Wireframes
-│   ├── flows/                 # User flows
-│   └── decisions/             # ADR
-│
-└── src/                       # Продакшн-код
-    ├── backend/               # FastAPI + SQLAlchemy + Celery + Alembic
-    ├── frontend/              # React (создаётся)
-    └── infrastructure/        # nginx, deploy (создаётся)
+┌─────────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Test Files    │────▶│   Pytest     │────▶│  Playwright │
+│   (e2e/, api/)  │     │  Fixtures    │     │   Browser   │
+└─────────────────┘     └──────────────┘     └─────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+        ┌──────────┐   ┌──────────┐   ┌──────────┐
+        │ API      │   │ Database │   │  Test    │
+        │ Clients  │   │ Engine   │   │  Data    │
+        └──────────┘   └──────────┘   └──────────┘
+```
+
+**Stack:**
+- **Core:** Python 3.11+, pytest + pytest-playwright
+- **Config:** pydantic-settings + .env (strict validation)
+- **API Client:** httpx (async)
+- **Database:** SQLAlchemy 2.x + asyncpg
+- **Test Data:** factory_boy + faker
+- **Logging:** structlog (JSON in CI)
+- **Reporting:** Allure + Playwright Trace Viewer
+
+---
+
+## 📁 Project Structure
+
+```
+playwright-qa/
+├── .ai/                         # 🧠 Кросс-AI память (читают все ассистенты)
+│   └── memory/
+│       ├── business/            # Бизнес-решения (ниша, цены, экономика)
+│       ├── tech/                # Технические решения (стек, БД, API)
+│       ├── design/              # UI/UX-решения, дизайн-токены
+│       └── iterations/          # Лог итераций
+├── .github/workflows/e2e.yml    # 🔄 CI: matrix sharding, cache, retry, allure, tms-sync
+├── scripts/tms_reporter.py      # 📤 JUnit → TMS REST API sync
+├── src/                         # 🔌 Core clients and configs
+│   ├── api/clients.py           # HTTPX async API client
+│   ├── db/engine.py             # SQLAlchemy async engine
+│   └── config/settings.py       # Pydantic settings
+├── tests/
+│   ├── components/              # 🧩 Component-based POM
+│   │   └── base_component.py    # Base component class
+│   ├── e2e/                     # 🎬 Business scenario tests
+│   ├── fixtures/                # 🔧 Test data factories
+│   │   └── factories.py         # factory_boy factories
+│   └── conftest.py              # 📦 Global fixtures, logging
+├── .cursorrules                 # 📏 AI generation rules
+├── Dockerfile                   # 🐳 Playwright official image
+├── pyproject.toml               # 📦 Dependencies + tool configs
+└── .env.example                 # 🔑 Environment template
 ```
 
 ---
 
-## 🔐 Безопасность и 152-ФЗ
+## 🧪 Testing Patterns
 
-- **RLS (Row Level Security)** — изоляция данных по `tenant_id` на уровне Postgres.
-- **JWT** — access (15 мин) + refresh (30 дней).
-- **bcrypt** для паролей (cost 12).
-- **phone_hash** — хеширование телефонов SHA-256 для поиска.
-- **soft delete** (`deleted_at`) для всех бизнес-сущностей.
-- **HTTPS only** в проде, rate limiting на nginx.
+### Component-Based POM
 
----
+```python
+from tests.components.base_component import BaseComponent
 
-## 📡 API Endpoints (текущие)
+class HeaderComponent(BaseComponent):
+    def __init__(self, page):
+        super().__init__(page, "header")
+    
+    @property
+    def logo(self):
+        return self._child(".logo")
+    
+    def click_logo(self):
+        self.logo.click()
 
-| Метод | Endpoint | Описание |
-|-------|----------|----------|
-| `POST` | `/api/v1/auth/login` | Получить JWT |
-| `GET`  | `/api/v1/clients` | Список клиентов |
-| `POST` | `/api/v1/clients` | Создать клиента |
-| `GET`  | `/api/v1/vehicles` | Список авто |
-| `POST` | `/api/v1/vehicles` | Добавить авто |
-| `GET`  | `/api/v1/orders` | Список заказов |
-| `POST` | `/api/v1/orders` | Создать заказ |
+# Usage in test
+def test_navigation(page):
+    header = HeaderComponent(page)
+    header.expect_visible()
+    header.click_logo()
+```
 
-Полный список — Swagger UI на `/docs`.
+### API Pre-conditions
 
----
+```python
+from src.api.clients import APIClient
+from tests.fixtures.factories import UserFactory
 
-## 🎨 UI-эталон
+@pytest.mark.asyncio
+async def test_user_flow(page):
+    # Create user via API
+    user_data = UserFactory.build()
+    
+    async with APIClient() as api:
+        response = await api.post("/users", json=user_data)
+        user_id = response.json()["id"]
+    
+    # Continue with UI test using created user
+    page.goto(f"/users/{user_id}")
+```
 
-`artifacts/pages/8may2026.html` — законченный интерактивный прототип:
-- Лендинг (хиро / боли / решение / для кого / функции / цены / CTA / футер).
-- Демо CRM с переключением между 4 типами бизнеса (автосервис, магазин, детейлинг, мойка).
-- Все ключевые модули: дашборд, сообщения, воронка услуг, клиенты, заказы, склад, сотрудники, аналитика.
-- Полная интерактивность: drag-and-drop в воронке, редактор напоминаний, CRUD клиентов с localStorage.
+### DB Transaction Isolation
 
-Открой в браузере перед любой UI/UX-задачей.
-
----
-
-## 🤖 Работа с AI-ассистентами
-
-Проект готов к работе с **любым** AI-кодером:
-- **Cursor** — читает `AGENTS.md` и `.cursor/rules/`.
-- **Claude Code** — читает `AGENTS.md` (или `CLAUDE.md`).
-- **OpenAI Codex** — читает `AGENTS.md`.
-- Другие — см. `AGENTS.md` → раздел «Совместимость».
-
-Все важные решения хранятся в `.ai/memory/` и доступны любому ассистенту в новой сессии.
-
-Подробное руководство — `PROJECT_GUIDE.md`.
-
----
-
-## 📊 Метрики успеха
-
-| Метрика | Цель |
-|---------|------|
-| Время онбординга | <15 минут |
-| Конверсия в оплату после триала | >25% |
-| Retention 30 дней | >60% |
-| NPS пилотных клиентов | >8/10 |
-| Uptime | >99.5% |
+```python
+async def test_with_db(db_session):
+    async with db_session as session:
+        # All changes auto-rollback after test
+        result = await session.execute(query)
+```
 
 ---
 
-## 🔒 Ограничения проекта
+## 🔄 CI/CD Pipeline
 
-- Команда: 3 человека + AI-инструменты
-- Бюджет MVP: до 5 млн ₽
-- Срок до пилота: 4–5 месяцев
-- Compliance: 152-ФЗ (РФ)
+### GitHub Actions Features
+- **Matrix Sharding:** Split tests across 2 runners (free tier optimized)
+- **Caching:** pip dependencies + Playwright browsers
+- **Retry Logic:** `--reruns 2 --reruns-delay 3` for flaky tests
+- **Artifacts:** Screenshots, traces, Allure results
+- **TMS Sync:** Auto-push results to external TMS via REST API
 
----
-
-## 🔗 Ключевые документы
-
-- [AGENTS.md](./AGENTS.md) — правила и философия для AI
-- [PROJECT_GUIDE.md](./PROJECT_GUIDE.md) — как работать с проектом
-- [docs/01-concept.md](./docs/01-concept.md) — концепция продукта
-- [docs/03-mvp-spec.md](./docs/03-mvp-spec.md) — спецификация MVP
-- [docs/04-ui-modules.md](./docs/04-ui-modules.md) — UI-модули
-- [artifacts/thinking/📌 Манифест проекта.md](./artifacts/thinking/📌%20Манифест%20проекта.md) — манифест
-- [artifacts/pages/8may2026.html](./artifacts/pages/8may2026.html) — UI-прототип
+### Workflow Jobs
+1. **test:** Parallel shards with `fail-fast: false`
+2. **report:** Generate Allure HTML report
+3. **tms-sync:** Push results to TMS (TestRail/Qase/etc.)
 
 ---
 
-## 📄 Лицензия
+## 📊 Reporting
 
-Proprietary (коммерческий проект)
+### Allure Report
+```bash
+# Local
+allure serve allure-results
+
+# CI: Deployed to GitHub Pages
+```
+
+### Playwright Trace Viewer
+```bash
+# View traces from failed tests
+playwright show-trace trace.zip
+```
+
+### TMS Integration
+Mark tests with TMS IDs:
+```python
+@pytest.mark.tms_id("TC-123")
+def test_login():
+    ...
+```
+
+---
+
+## ⚙️ Configuration
+
+### Environment Variables (.env)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BASE_URL` | Application URL | `http://localhost:3000` |
+| `API_BASE_URL` | API URL (optional) | Derived from BASE_URL |
+| `BROWSER` | Browser type | `chromium` |
+| `HEADLESS` | Headless mode | `true` |
+| `TIMEOUT` | Default timeout (ms) | `30000` |
+| `DB_HOST` | Database host | `localhost` |
+| `DB_PORT` | Database port | `5432` |
+| `DB_NAME` | Database name | `qa_test` |
+| `DB_USER` | Database user | `qa` |
+| `DB_PASSWORD` | Database password | `qa_pass` |
+| `API_TOKEN` | API auth token | — |
+| `TMS_API_URL` | TMS API URL | — |
+| `TMS_TOKEN` | TMS auth token | — |
+
+---
+
+## 🎯 Key Principles
+
+1. **No Global State:** All browser/context/browser managed via fixtures
+2. **No time.sleep():** Use Playwright auto-waits and expect()
+3. **Component-Based:** Reusable UI components, not page objects
+4. **API First:** Test data via API, not UI
+5. **Auto-Rollback:** DB transactions rollback after each test
+6. **No Hardcoding:** All data parameterized or generated
+7. **Strict Typing:** mypy --strict enforced
+8. **CI Optimized:** Shard-based parallelism (no xdist in CI)
+
+---
+
+## 📈 Metrics
+
+| Metric | Target |
+|--------|--------|
+| Test execution time | <10 min (full suite) |
+| Flaky rate | <2% |
+| Code coverage | >80% (business logic) |
+| CI success rate | >95% |
+
+---
+
+## 🔗 Documentation
+
+- [AGENTS.md](./AGENTS.md) — AI assistant rules
+- [PROJECT_GUIDE.md](./PROJECT_GUIDE.md) — Project workflow guide
+- [.cursorrules](./.cursorrules) — AI code generation constraints
+
+---
+
+## 📄 License
+
+MIT License

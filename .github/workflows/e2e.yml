@@ -1,4 +1,5 @@
 name: E2E & API Tests
+
 on:
   push: { branches: [main, develop] }
   pull_request: { branches: [main] }
@@ -10,10 +11,13 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1, 2] # GitHub Actions free runner = 2 vCPU
+    
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
+        with:
+          python-version: '3.11'
       
       - name: Cache dependencies & browsers
         uses: actions/cache@v4
@@ -22,60 +26,87 @@ jobs:
             ~/.cache/pip
             ~/.cache/ms-playwright
           key: ${{ runner.os }}-pw-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pw-
 
-      - run: pip install uv && uv pip install --system .
-      - run: python -m playwright install --with-deps chromium
+      - name: Install dependencies
+        run: pip install uv && uv pip install --system .
+      
+      - name: Install Playwright browsers
+        run: python -m playwright install --with-deps chromium
 
-      - name: Run tests
+      - name: Run tests (sharded)
         run: >
           pytest tests/
           --browser chromium
           --headless
           --alluredir=allure-results
-          --junit-xml=test-results.xml
-          -n 2 --dist=worksteal
+          --junit-xml=test-results-shard-${{ matrix.shard }}.xml
           --reruns 2 --reruns-delay 3
-          -m "e2e or api"
+          -m "e2e or api or smoke"
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
           DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          TMS_API_URL: ${{ secrets.TMS_API_URL }}
+          TMS_TOKEN: ${{ secrets.TMS_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-artifacts-${{ matrix.shard }}
+          name: test-artifacts-shard-${{ matrix.shard }}
           path: |
             allure-results/
-            test-results.xml
+            test-results-*.xml
+            playwright-report/
+          retention-days: 7
 
   report:
     needs: test
     runs-on: ubuntu-22.04
     if: always()
+    
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { pattern: test-artifacts-*, merge-multiple: true, path: artifacts/ }
       
-      - name: Generate Allure
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: test-artifacts-shard-*
+          merge-multiple: true
+          path: artifacts/
+      
+      - name: Generate Allure Report
         run: |
-          docker run -v ${{ github.workspace }}/artifacts/allure-results:/allure-results \
+          docker run \
+            -v ${{ github.workspace }}/artifacts/allure-results:/allure-results \
             -v ${{ github.workspace }}/allure-report:/allure-report \
             ghcr.io/allure-framework/allure2:2.30.0 allure generate --clean
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: allure-report/ }
+      
+      - name: Upload Allure Report
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report/
 
   tms-sync:
     needs: test
     runs-on: ubuntu-22.04
     if: ${{ success() || failure() }}
+    
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
-      - run: pip install requests pydantic-settings
-      - run: python scripts/tms_reporter.py --junit test-results.xml
+        with:
+          python-version: '3.11'
+      
+      - name: Install TMS reporter deps
+        run: pip install requests pydantic-settings
+      
+      - name: Sync test results to TMS
+        run: python scripts/tms_reporter.py --junit-dir artifacts/
         env:
           TMS_API_URL: ${{ secrets.TMS_API_URL }}
           TMS_TOKEN: ${{ secrets.TMS_TOKEN }}
