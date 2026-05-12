@@ -16,9 +16,10 @@ class TestIntegration:
     """Класс интеграционных тестов."""
 
     @pytest.fixture
-    def api_client(self):
+    async def api_client(self):
         """Создать экземпляр API клиента."""
-        return APIClient(base_url="https://jsonplaceholder.typicode.com")
+        async with APIClient(base_url="https://jsonplaceholder.typicode.com") as client:
+            yield client
 
     @pytest.fixture
     def db_engine(self):
@@ -33,11 +34,11 @@ class TestIntegration:
         )
 
     @pytest.mark.api
-    def test_get_posts_from_api(self, api_client):
+    async def test_get_posts_from_api(self, api_client):
         """Проверка получения списка постов из API."""
         logger.info("Выполняем запрос к API для получения постов")
 
-        response = api_client.get("/posts", params={"_limit": 5})
+        response = await api_client.get("/posts", params={"_limit": 5})
 
         assert response.status_code == 200, "API вернул ошибку"
         data = response.json()
@@ -50,11 +51,11 @@ class TestIntegration:
         logger.info(f"Успешно получено {len(data)} постов")
 
     @pytest.mark.api
-    def test_get_single_post(self, api_client):
+    async def test_get_single_post(self, api_client):
         """Проверка получения одного поста по ID."""
         logger.info("Запрашиваем пост с ID=1")
 
-        response = api_client.get("/posts/1")
+        response = await api_client.get("/posts/1")
 
         assert response.status_code == 200
         post = response.json()
@@ -66,7 +67,7 @@ class TestIntegration:
         logger.info(f"Получен пост: {post['title'][:30]}...")
 
     @pytest.mark.api
-    def test_create_post_via_api(self, api_client):
+    async def test_create_post_via_api(self, api_client):
         """Проверка создания нового поста через API."""
         logger.info("Создаем новый пост через API")
 
@@ -76,7 +77,7 @@ class TestIntegration:
             "userId": 1,
         }
 
-        response = api_client.post("/posts", json=new_post)
+        response = await api_client.post("/posts", json=new_post)
 
         assert response.status_code == 201, "Не удалось создать пост"
         created_post = response.json()
@@ -105,12 +106,12 @@ class TestIntegration:
         logger.info("Подключение к БД успешно (mock)")
 
     @pytest.mark.api
-    def test_integration_api_and_logging(self, api_client):
+    async def test_integration_api_and_logging(self, api_client):
         """Комплексный тест: API + логирование."""
         logger.info("Запуск комплексного интеграционного теста")
 
         # Получаем список пользователей
-        users_response = api_client.get("/users", params={"_limit": 3})
+        users_response = await api_client.get("/users", params={"_limit": 3})
         assert users_response.status_code == 200
         users = users_response.json()
 
@@ -119,7 +120,7 @@ class TestIntegration:
         # Для каждого пользователя получаем его посты
         for user in users:
             user_id = user["id"]
-            posts_response = api_client.get(f"/posts?userId={user_id}")
+            posts_response = await api_client.get(f"/posts?userId={user_id}")
             assert posts_response.status_code == 200
 
             posts = posts_response.json()

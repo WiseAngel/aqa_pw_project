@@ -5,6 +5,8 @@ Quick sanity checks to verify the application is running and basic functionality
 Mark with @pytest.mark.smoke for CI inclusion.
 """
 
+import re
+
 import pytest
 from playwright.sync_api import Page, expect
 
@@ -15,7 +17,7 @@ def test_homepage_loads(page: Page) -> None:
     from src.config.settings import settings
 
     page.goto(settings.base_url)
-    expect(page).to_have_title(lambda title: len(title) > 0)
+    expect(page).to_have_title(re.compile(r".+"))  # Любой непустой заголовок
     expect(page).to_have_url(settings.base_url)
 
 
