@@ -1,0 +1,108 @@
+# ── Python ────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ── Virtual environments ──────────────────────────────────────────────
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# ── Node.js / Frontend ────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.next/
+.nuxt/
+.turbo/
+.parcel-cache/
+.vite/
+
+# ── IDE ───────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Logs ──────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Environment variables ─────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env.*
+
+# ── Coverage / tests ──────────────────────────────────────────────────
+.coverage
+coverage/
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.nyc_output/
+
+# ── Docker ────────────────────────────────────────────────────────────
+.dockerenv
+docker-compose.override.yml
+
+# ── Alembic (миграции коммитим, кэш — нет) ────────────────────────────
+# alembic/versions/*.py — НЕ игнорируем, миграции должны быть в репозитории
+
+# ── Celery ────────────────────────────────────────────────────────────
+celerybeat-schedule
+celerybeat.pid
+
+# ── Database ──────────────────────────────────────────────────────────
+*.db
+*.sqlite3
+*.sqlite
+
+# ── Temporary ─────────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+
+# ── Secrets ───────────────────────────────────────────────────────────
+*.pem
+*.key
+secrets/
+
+# ── OS ────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── AI / память ───────────────────────────────────────────────────────
+# .ai/memory/ — коммитим, это общая память команды
+# Если нужна приватная локальная память — используй .ai/local/
+.ai/local/
+
+# ── Cursor ────────────────────────────────────────────────────────────
+# .cursor/ — коммитим (промпты, правила)
+# Локальные настройки Cursor пользователя:
+.cursor/cache/
+.cursor/local/
