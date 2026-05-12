@@ -81,13 +81,23 @@ allure serve allure-results
 ## 📁 Project Structure
 
 ```
-playwright-qa/
-├── .ai/                         # 🧠 Кросс-AI память (читают все ассистенты)
+/workspace/                      # 🔝 ROOT PROJECT DIRECTORY
+├── .ai/                         # 🧠 Cross-AI memory (all assistants read)
 │   └── memory/
-│       ├── business/            # Бизнес-решения (ниша, цены, экономика)
-│       ├── tech/                # Технические решения (стек, БД, API)
-│       ├── design/              # UI/UX-решения, дизайн-токены
-│       └── iterations/          # Лог итераций
+│       ├── README.md            # Memory usage guide
+│       ├── business/            # Business decisions (niche, prices, economics)
+│       │   └── .gitkeep
+│       ├── tech/                # Technical decisions (stack, DB, API) + [MEMORY]
+│       │   ├── .gitkeep
+│       │   └── 2026-05-12_playwright-qa-framework-setup.md  # ⭐ MEMORY: Framework setup
+│       ├── design/              # UI/UX decisions, design tokens
+│       │   └── .gitkeep
+│       └── iterations/          # Iteration log
+│           └── .gitkeep
+├── .cursor/                     # Cursor-specific settings
+│   └── prompts/                 # AI prompt templates
+│       ├── README.md
+│       └── new-chat-template.md
 ├── .github/workflows/e2e.yml    # 🔄 CI: matrix sharding, cache, retry, allure, tms-sync
 ├── scripts/tms_reporter.py      # 📤 JUnit → TMS REST API sync
 ├── src/                         # 🔌 Core clients and configs
@@ -101,9 +111,23 @@ playwright-qa/
 │   ├── fixtures/                # 🔧 Test data factories
 │   │   └── factories.py         # factory_boy factories
 │   └── conftest.py              # 📦 Global fixtures, logging
+├── artifacts/                   # Workspace (development artifacts)
+│   ├── README.md
+│   ├── decisions/               # ADR
+│   ├── flows/                   # User flows
+│   ├── mockups/                 # Wireframes
+│   ├── pages/                   # HTML prototypes
+│   └── thinking/                # Manifests, research
+├── docs/                        # Conceptual documentation
+│   ├── 01-concept.md
+│   ├── 03-mvp-spec.md
+│   └── 04-ui-modules.md
 ├── .cursorrules                 # 📏 AI generation rules
+├── .cursorrules.txt             # (compatibility duplicate)
 ├── Dockerfile                   # 🐳 Playwright official image
 ├── pyproject.toml               # 📦 Dependencies + tool configs
+├── AGENTS.md                    # 🤖 AI assistant rules
+├── PROJECT_GUIDE.md             # 📘 Full project guide
 └── .env.example                 # 🔑 Environment template
 ```
 
