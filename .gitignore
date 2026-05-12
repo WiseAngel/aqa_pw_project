@@ -39,6 +39,11 @@ build/
 coverage/
 htmlcov/
 
+# Playwright artifacts
+playwright-report/
+test-results/
+blob-report/
+
 # OS generated files
 .DS_Store
 Thumbs.db

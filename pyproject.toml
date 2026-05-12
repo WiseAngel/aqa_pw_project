@@ -59,3 +59,11 @@ python_version = "3.11"
 strict = true
 warn_return_any = true
 disallow_untyped_defs = true
+
+[tool.pytest.ini_options.env]
+# Переменные окружения для тестов (можно переопределить в .env)
+BASE_URL = "https://demo.playwright.dev/todomvc"
+API_BASE_URL = "https://jsonplaceholder.typicode.com"
+BROWSER = "chromium"
+HEADLESS = "true"
+TIMEOUT = "30000"

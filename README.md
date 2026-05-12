@@ -113,19 +113,28 @@ allure serve allure-results
 │   └── prompts/                 # Шаблоны промптов для AI
 │       ├── README.md
 │       └── new-chat-template.md
-├── .github/workflows/e2e.yml    # 🔄 CI pipeline
+├── .github/workflows/           # 🔄 CI pipeline
+│   └── ci.yml                   # GitHub Actions workflow
 ├── scripts/tms_reporter.py      # 📤 JUnit → TMS sync
-├── src/                         # 🔌 Core clients
-│   ├── api/clients.py           # HTTPX async client
-│   ├── db/engine.py             # SQLAlchemy engine
-│   └── config/settings.py       # Pydantic settings
-├── tests/
-│   ├── components/              # 🧩 UI components
-│   │   └── base_component.py    # Base class
-│   ├── e2e/                     # 🎬 E2E tests
-│   ├── fixtures/                # 🔧 Factories
-│   │   └── factories.py         # factory_boy
-│   └── conftest.py              # 📦 Fixtures
+├── src/                         # 🔌 Исходный код (clients, utils)
+│   ├── api/                     # API клиенты
+│   │   └── clients.py           # HTTPX async client
+│   ├── db/                      # Database engine
+│   │   └── engine.py            # SQLAlchemy engine
+│   ├── config/                  # Конфигурация
+│   │   └── settings.py          # Pydantic settings
+│   └── utils/                   # Утилиты
+│       └── logger.py            # Централизованное логирование
+├── tests/                       # 🧪 Тесты
+│   ├── components/              # 🧩 UI компоненты (кнопки, формы, навигация)
+│   │   └── test_components.py   # Тесты компонентов
+│   ├── e2e/                     # 🎬 E2E сценарии
+│   │   └── test_smoke.py        # Smoke тесты
+│   ├── integration/             # 🔗 Интеграционные тесты (API + DB)
+│   │   └── test_integration.py  # Интеграционные тесты
+│   ├── fixtures/                # 🔧 Фабрики данных
+│   │   └── factories.py         # factory_boy фабрики
+│   └── conftest.py              # 📦 Глобальные фикстуры
 ├── artifacts/                   # Рабочая площадка (артефакты разработки)
 │   ├── README.md
 │   ├── decisions/               # ADR
