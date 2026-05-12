@@ -1,41 +1,45 @@
 ```
-# Dependencies
-.venv/
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# AI memory directory (except examples and templates)
+.ai/
+!.ai/memory/**/*.md
 
-# Build artifacts
-build/
-dist/
-*.egg-info/
+# Logs and temp files
+*.log
+*.tmp
 
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-.mypy_cache/
-
-# Environment
+# Environment (keep .env.example)
 .env
 .env.local
-*.env.*
+.env.*
+!.env.example
 
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# OS
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Dependencies
+.venv/
+venv/
+.env/
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.coverage
+coverage/
+htmlcov/
+
+# OS generated files
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
 ```

@@ -14,19 +14,34 @@
 ### Installation
 
 ```bash
-# Clone repository
+# 1. Clone repository and navigate to it
 git clone <repo-url> playwright-qa
 cd playwright-qa
 
-# Install dependencies
+# 2. Install uv (if not already installed)
 pip install uv
+
+# 3. Create virtual environment
+uv venv
+
+# 4. Activate virtual environment
+# For PowerShell:
+.\.venv\Scripts\Activate.ps1
+# For CMD:
+# .venv\Scripts\activate.bat
+# For Bash/Zsh:
+# source .venv/bin/activate
+
+# 5. Install dependencies (including dev dependencies)
 uv pip install -e ".[dev]"
 
-# Install Playwright browsers
+# 6. Install Playwright browsers
 playwright install chromium
 
-# Copy environment config
+# 7. Copy environment configuration
 cp .env.example .env
+# Or in PowerShell, if cp doesn't work:
+# Copy-Item .env.example .env
 ```
 
 ### Run Tests
@@ -118,10 +133,6 @@ allure serve allure-results
 │   ├── mockups/                 # Wireframes
 │   ├── pages/                   # HTML prototypes
 │   └── thinking/                # Manifests, research
-├── docs/                        # Conceptual documentation
-│   ├── 01-concept.md
-│   ├── 03-mvp-spec.md
-│   └── 04-ui-modules.md
 ├── .cursorrules                 # 📏 AI generation rules
 ├── .cursorrules.txt             # (compatibility duplicate)
 ├── Dockerfile                   # 🐳 Playwright official image
