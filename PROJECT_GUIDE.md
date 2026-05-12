@@ -1,314 +1,309 @@
-# 📘 Руководство по работе с проектом «Надо»
+# 📘 Руководство по Playwright QA Framework
 
-> Этот документ описывает, как устроен проект и как с ним работать — людям и AI-ассистентам.
-> Технические правила для AI зашиты в `AGENTS.md`. Этот файл — про процессы и навигацию.
+> Этот документ описывает, как устроен фреймворк и как с ним работать — людям и AI-ассистентам.
 
 ---
 
-## 🎯 Что это вообще
+## 🎯 Что это
 
-«Надо» — узкоспециализированная CRM для малого автобизнеса (автосервисы, автомойки, детейлинг, автомагазины). Подробнее — в `README.md` и `docs/01-concept.md`.
+Production-ready E2E фреймворк для автотестов на базе Playwright + pytest с:
+- Component-based POM архитектурой
+- API pre-conditions для тестовых данных
+- DB transaction isolation с auto-rollback
+- Полным CI/CD циклом на GitHub Actions
+- Интеграцией с TMS через REST API
 
 ---
 
 ## 📁 Структура проекта
 
 ```
-crm/
-├── AGENTS.md                  # ⭐ Правила для AI-ассистентов (Cursor, Claude, Codex...)
-├── README.md                  # Короткое описание + быстрый старт
-├── PROJECT_GUIDE.md           # Этот документ
-├── docker-compose.yml         # Все сервисы (postgres, redis, backend, celery)
-├── .gitignore
-│
-├── .cursor/                   # Cursor-специфичные настройки
-│   └── prompts/               # 10 готовых шаблонов промптов
-│       └── README.md
-│
-├── .ai/                       # Кросс-AI память (читают все ассистенты)
+/workspace/                      # 🔝 КОРНЕВАЯ ДИРЕКТОРИЯ ПРОЕКТА
+├── .ai/                         # 🧠 Кросс-AI память (читают все ассистенты)
 │   └── memory/
+│       ├── README.md            # Инструкция по работе с памятью
+│       ├── business/            # Бизнес-решения (ниша, цены, экономика)
+│       │   └── .gitkeep
+│       ├── tech/                # Технические решения (стек, БД, API) + [Память]
+│       │   ├── .gitkeep
+│       │   └── 2026-05-12_playwright-qa-framework-setup.md  # ⭐ ПАМЯТЬ: Настройка фреймворка
+│       ├── design/              # UI/UX-решения, дизайн-токены
+│       │   └── .gitkeep
+│       └── iterations/          # Лог итераций
+│           └── .gitkeep
+├── .cursor/                     # Cursor-специфичные настройки
+│   └── prompts/                 # Шаблоны промптов для AI
 │       ├── README.md
-│       ├── business/          # Бизнес-решения (ниша, цены, экономика)
-│       ├── tech/              # Технические решения (стек, БД, API)
-│       ├── design/            # UI/UX-решения, дизайн-токены
-│       └── iterations/        # Лог итераций
-│
-├── docs/                      # Концептуальная документация
-│   ├── 01-concept.md          # Концепция, философия, метрики
-│   ├── 03-mvp-spec.md         # Функциональные требования MVP
-│   └── 04-ui-modules.md       # Описание UI-модулей (по 8may2026.html)
-│
-├── artifacts/                 # Рабочая площадка
-│   ├── README.md              # Шаблоны и правила
-│   ├── thinking/              # Размышления, манифесты, исследования
-│   │   ├── 📌 Манифест проекта.md
-│   │   ├── 🎯 Философия и ценности.md
-│   │   ├── 🔍 Анализ ниши — Автосервисы.md
-│   │   ├── 🔎 Анализ AmoCRM — вдохновение.md
-│   │   ├── 🔄 Воронка услуг — концепция.md
-│   │   ├── 🌐 Лендинг — структура.md
-│   │   ├── 📋 Правки и изменения.md
-│   │   ├── 📅 Лог разработки.md
-│   │   └── ⏰ Напоминания и задачи.md
-│   ├── pages/                 # HTML-прототипы
-│   │   ├── 7may2026.html
-│   │   └── 8may2026.html      # ⭐ Актуальный референс UI
-│   ├── mockups/               # Wireframes, ASCII-схемы
-│   ├── flows/                 # User flows + Mermaid-диаграммы
-│   └── decisions/             # ADR (Architecture Decision Records)
-│
-├── src/                       # Весь продакшн-код
-│   ├── backend/               # FastAPI + SQLAlchemy + Celery + Alembic
-│   │   ├── app/
-│   │   │   ├── core/          # config, security, database, RLS
-│   │   │   ├── models/        # SQLAlchemy
-│   │   │   ├── schemas/       # Pydantic
-│   │   │   ├── api/v1/        # REST-роутеры
-│   │   │   ├── services/      # Бизнес-логика
-│   │   │   └── workers/       # Celery
-│   │   ├── alembic/           # Миграции
-│   │   ├── tests/
-│   │   ├── pyproject.toml
-│   │   └── Dockerfile
-│   ├── frontend/              # React + Vite + TypeScript + Tailwind + shadcn (создаётся)
-│   └── infrastructure/        # nginx, deploy-скрипты, CI/CD-конфиги (создаётся)
-│
-└── .idea/                     # JetBrains IDE (опционально)
+│       └── new-chat-template.md
+├── .github/workflows/e2e.yml    # 🔄 CI pipeline
+├── scripts/tms_reporter.py      # 📤 JUnit → TMS sync
+├── src/                         # 🔌 Core clients
+│   ├── api/clients.py           # HTTPX async client
+│   ├── db/engine.py             # SQLAlchemy engine
+│   └── config/settings.py       # Pydantic settings
+├── tests/
+│   ├── components/              # 🧩 UI components
+│   │   └── base_component.py    # Base class
+│   ├── e2e/                     # 🎬 E2E tests
+│   ├── fixtures/                # 🔧 Factories
+│   │   └── factories.py         # factory_boy
+│   └── conftest.py              # 📦 Fixtures
+├── artifacts/                   # Рабочая площадка (артефакты разработки)
+│   ├── README.md
+│   ├── decisions/               # ADR
+│   ├── flows/                   # User flows
+│   ├── mockups/                 # Wireframes
+│   ├── pages/                   # HTML-прототипы
+│   └── thinking/                # Размышления, манифесты
+├── docs/                        # Концептуальная документация
+│   ├── 01-concept.md
+│   ├── 03-mvp-spec.md
+│   └── 04-ui-modules.md
+├── AGENTS.md                    # 🤖 AI rules
+├── README.md                    # 📖 Quick start
+├── PROJECT_GUIDE.md             # 📘 Полное руководство
+├── Dockerfile                   # 🐳 Container
+├── pyproject.toml               # 📦 Dependencies
+├── .cursorrules                 # Правила для ИИ-генерации
+├── .cursorrules.txt             # (дубль для совместимости)
+└── .env.example                 # 🔑 Config template
 ```
 
 ---
 
 ## 🚀 Быстрый старт
 
-### 1. Открой проект в IDE
+### 1. Установка
 
 ```bash
-cd D:/dev/crm
-# Cursor / VS Code / WebStorm / Zed — любой
-cursor .
+git clone <repo-url> playwright-qa
+cd playwright-qa
+
+pip install uv
+uv pip install -e ".[dev]"
+playwright install chromium
+
+cp .env.example .env
 ```
 
-При старте AI-ассистент **автоматически прочитает `AGENTS.md`** (Cursor, Claude Code, Codex это делают нативно).
-
-### 2. Подними локально через Docker
+### 2. Запуск тестов
 
 ```bash
-docker compose up -d
-docker compose ps
-docker compose logs -f backend
+# Все тесты
+pytest
+
+# Только smoke
+pytest -m smoke
+
+# С отчётом Allure
+pytest --alluredir=allure-results
+allure serve allure-results
 ```
 
-Сервисы:
-- Backend API → http://localhost:8000
-- Swagger UI → http://localhost:8000/docs
-- PostgreSQL → localhost:5432
-- Redis → localhost:6379
+### 3. Настройка окружения
 
-### 3. Прочти ключевой контекст
-
-Перед первым запросом к AI ознакомься (или сошлись через `@`):
-- `AGENTS.md` — правила и стек
-- `docs/01-concept.md` — философия
-- `docs/03-mvp-spec.md` — что делаем
-- `docs/04-ui-modules.md` — как должны выглядеть модули
-- `artifacts/pages/8may2026.html` — открой в браузере, это эталон UI
+Отредактируй `.env`:
+```
+BASE_URL=https://app.example.com
+API_TOKEN=your-token
+DB_HOST=localhost
+```
 
 ---
 
 ## 🎭 Режимы работы с AI
 
-В начале каждого запроса указывай режим (см. `AGENTS.md` → раздел «Режимы»):
+В начале запроса указывай режим (см. `AGENTS.md`):
 
 ```
-[СТРАТЕГ]      — гипотезы, экономика, ниша
+[СТРАТЕГ]      — гипотезы, метрики
 [АРХИТЕКТУРА]  — БД, API, диаграммы
-[КОД]          — генерация, рефакторинг, тесты
+[КОД]          — генерация, рефакторинг
 [РЕВЬЮ]        — безопасность, оптимизация
-[UI/UX]        — компоненты, user flows
-[ДОКУМЕНТАЦИЯ] — README, спеки, инструкции
+[ДИЗАЙН]       — компоненты, паттерны
+[ДОКУМЕНТ]     — README, инструкции
 ```
 
-Пример хорошего запроса:
-
+Пример:
 ```
-[КОД] Создай модель Vehicle с полями: vin, reg_number, brand, model, year,
-is_japanese, mileage_km, next_service_km, next_service_date, owner_id.
-Стек: SQLAlchemy 2.x + PostgreSQL. Требования: типизация, индексы,
-soft delete, миграция Alembic, unit-тесты pytest.
-```
-
----
-
-## 🔗 Работа с контекстом
-
-### Cursor / Claude Code: ссылки через `@`
-
-```
-@AGENTS.md
-@docs/03-mvp-spec.md
-@artifacts/pages/8may2026.html
-@src/backend/app/models/
-@.ai/memory/tech/
-```
-
-### Composer / многофайловая генерация (Cursor: `Ctrl+K`)
-
-```
-Создай модуль orders с моделями, схемами, контроллерами, сервисами и тестами.
-Используй паттерн Repository. Стек: FastAPI + SQLAlchemy 2.x + pytest.
-```
-
-### Agent Mode (Cursor: `Ctrl+Shift+I`)
-
-```
-Оптимизируй запросы к БД в модуле clients. Найди и исправь N+1, добавь нужные индексы.
+[КОД] Создай компонент HeaderComponent с локаторами.
+Стек: Playwright + Component-based POM.
+Наследуй от BaseComponent.
 ```
 
 ---
 
-## 🧠 Сохранение памяти
+## 🧪 Паттерны тестирования
 
-Любое важное решение — **сразу в `.ai/memory/`** по шаблону из `.ai/memory/README.md`. Это работает для всех AI-ассистентов.
+### Component-Based POM
 
-### Категории
-- `business/` — выбор ниши, цены, экономика
-- `tech/` — стек, БД, API, инфраструктура
-- `design/` — UI-паттерны, цветовая система
-- `iterations/` — что меняли и почему
+```python
+from tests.components.base_component import BaseComponent
 
-### Пример обращения к AI после обсуждения
+class LoginFormComponent(BaseComponent):
+    def __init__(self, page):
+        super().__init__(page, "#login-form")
+    
+    def fill_email(self, email: str):
+        self._child("#email").fill(email)
+    
+    def submit(self):
+        self._child("button[type='submit']").click()
 
-```
-[ДОКУМЕНТАЦИЯ] Сохрани в память: выбрали SQLAlchemy 2.x вместо Prisma,
-потому что бэк на Python и нужен Alembic. Файл:
-.ai/memory/tech/2026-05-08_orm-choice.md
-```
-
----
-
-## 🎨 UI как эталон
-
-`artifacts/pages/8may2026.html` — это **законченный интерактивный прототип**:
-лендинг + демо CRM с 4 типами бизнеса (автосервис / магазин / детейлинг / мойка) и всеми ключевыми модулями (дашборд, сообщения, воронка услуг, клиенты, заказы, склад, сотрудники, аналитика).
-
-Любая фронтенд-задача должна **сверяться с этим прототипом** по визуалу и UX. Подробное описание модулей — в `docs/04-ui-modules.md`. Дизайн-токены (цвета, скругления, типографика) — в `.ai/memory/design/2026-05-08_design-system-v1.md`.
-
----
-
-## ✅ Чек-лист перед началом задачи
-
-- [ ] IDE открыта в корне проекта (`crm/`).
-- [ ] AI-ассистент видит `AGENTS.md` (для Cursor проверь, что нет ошибок индексации).
-- [ ] Прочёл `docs/01-concept.md` и `docs/03-mvp-spec.md`.
-- [ ] Открыл `artifacts/pages/8may2026.html` в браузере для визуального ориентира.
-- [ ] Выбрал режим (`[СТРАТЕГ]` / `[КОД]` / ...).
-- [ ] Подготовил запрос с контекстом (через `@file`).
-
----
-
-## 💡 Лучшие практики
-
-### 1. Всегда указывай режим
-❌ `Создай модель клиента`
-✅ `[КОД] Создай модель Client. Стек: SQLAlchemy 2.x + PostgreSQL. soft delete, индексы, валидация телефона.`
-
-### 2. Давай контекст
-❌ `Как сделать авторизацию?`
-✅ `[АРХИТЕКТУРА] Спроектируй аутентификацию для MVP. JWT (access 15 мин, refresh 30 дней), роли (владелец/мастер/админ), сброс по email. 152-ФЗ.`
-
-### 3. Composer/Agent Mode для больших задач
-Вместо последовательной генерации файлов — одной командой:
-```
-Создай модуль clients с полным CRUD: модели, схемы, контроллеры, сервисы, тесты.
-Backend: FastAPI + SQLAlchemy. Frontend: React + TypeScript + shadcn/ui.
+# В тесте
+def test_login(page):
+    form = LoginFormComponent(page)
+    form.fill_email("test@example.com")
+    form.submit()
+    form.expect_hidden()
 ```
 
-### 4. Проверяй сгенерированный код
-- Линтеры: `ruff` (Python), `eslint` (TS).
-- Тесты: `pytest`, `vitest`.
-- Сверяйся со спецификацией (`docs/03-mvp-spec.md`).
+### API Pre-conditions
 
-### 5. Фиксируй важное в памяти
-Любое нестандартное решение — в `.ai/memory/` сразу же. Иначе через неделю никто (и ни один AI) уже не вспомнит, почему сделано именно так.
+```python
+from src.api.clients import APIClient
+from tests.fixtures.factories import UserFactory
 
----
+async def test_with_api_data(page):
+    user = UserFactory.build()
+    
+    async with APIClient() as api:
+        resp = await api.post("/users", json=user)
+        user_id = resp.json()["id"]
+    
+    page.goto(f"/users/{user_id}")
+    # Continue UI test
+```
 
-## 🔧 Полезные команды Cursor
+### DB Isolation
 
-| Команда | Горячие клавиши | Описание |
-|---------|----------------|----------|
-| Chat | `Ctrl+L` | Диалог с AI |
-| Composer | `Ctrl+K` | Многофайловая генерация |
-| Agent Mode | `Ctrl+Shift+I` | Длинные задачи, рефакторинг |
-| Quick Edit | `Ctrl+I` | Быстрое редактирование выделенного |
-| Find in Files | `Ctrl+Shift+F` | Поиск |
-| Command Palette | `Ctrl+Shift+P` | Все команды |
-
----
-
-## 🚧 Roadmap (укрупнённо)
-
-### Sprint 0: фундамент (1–2 нед)
-- [x] Структура репозитория, документация, AGENTS.md
-- [x] Скелет backend (FastAPI + SQLAlchemy + Alembic + Celery)
-- [x] docker-compose с postgres / redis / backend / celery
-- [ ] Скелет frontend (React + Vite + Tailwind + shadcn)
-- [ ] CI: линтер + тесты на pull request
-
-### Sprint 1: auth + clients (1–2 нед)
-- [ ] Регистрация / вход / JWT
-- [ ] Роли (владелец / мастер / админ) + RLS
-- [ ] CRUD клиентов и автомобилей
-- [ ] Поиск, фильтры, пагинация
-
-### Sprint 2: orders (2 нед)
-- [ ] Заказ-наряды (CRUD, статусы, расчёт стоимости)
-- [ ] Канбан-доска
-- [ ] Печать PDF
-
-### Sprint 3: воронка + напоминания (2 нед)
-- [ ] Модуль services (воронка по регулярным услугам)
-- [ ] Celery beat — триггеры по дате/пробегу
-- [ ] Telegram Bot + WhatsApp + VK + Max — единое окно сообщений
-
-### Sprint 4: дашборд + аналитика (1–2 нед)
-- [ ] Виджеты дашборда
-- [ ] Аналитика: цели, источники, сотрудники, ЗП
-
-### Sprint 5: тестирование и пилот (1–2 нед)
-- [ ] Покрытие тестами >80% по бэку
-- [ ] Онбординг 5–10 пилотных автосервисов
+```python
+async def test_with_db(db_session):
+    async with db_session as session:
+        # Auto-rollback after test
+        result = await session.execute(query)
+```
 
 ---
 
-## ❓ FAQ
+## 🔄 CI/CD Pipeline
 
-**Q: AI не видит мои файлы?**
-A: Открой корень проекта (`D:/dev/crm`). Проверь, что AGENTS.md в корне, а не в подпапке.
+### GitHub Actions workflow
 
-**Q: Как обновить индексацию Cursor?**
-A: `Ctrl+Shift+P` → «Reload Window». Или перезапустить IDE.
+1. **test job** (matrix shard 1, 2)
+   - Cache: pip + Playwright browsers
+   - Run: `pytest --shard=X/Y`
+   - Retry: `--reruns 2 --reruns-delay 3`
+   - Upload: artifacts (screenshots, traces, allure)
 
-**Q: Можно ли использовать несколько AI одновременно?**
-A: Да. Все они читают `AGENTS.md`. Для специфичных правил используй `.cursor/rules/*.mdc` (Cursor) или `CLAUDE.md` (Claude Code).
+2. **report job**
+   - Download all shards artifacts
+   - Generate Allure HTML report
+   - Deploy to GitHub Pages
 
-**Q: Где хранить секреты?**
-A: В `.env` (добавлен в `.gitignore`). В коде — `os.getenv()` / `process.env`.
+3. **tms-sync job**
+   - Parse JUnit XML
+   - Push results to TMS via REST API
 
-**Q: Как поделиться контекстом с командой?**
-A: Коммить `.ai/memory/`, `artifacts/`, `docs/`. Это и есть документация решений.
+### Secrets required
+
+| Secret | Description |
+|--------|-------------|
+| `BASE_URL` | Application URL |
+| `API_TOKEN` | API auth token |
+| `DB_HOST` | Database host |
+| `DB_USER` | Database user |
+| `DB_PASS` | Database password |
+| `TMS_API_URL` | TMS API endpoint |
+| `TMS_TOKEN` | TMS auth token |
 
 ---
 
-## 📞 Что читать дальше
+## 📊 Отчётность
 
-1. `README.md` — общее описание + DevOps-команды
-2. `AGENTS.md` — правила для AI (обязательно для AI-сессий)
-3. `docs/01-concept.md` — философия продукта
-4. `docs/03-mvp-spec.md` — функциональные требования
-5. `docs/04-ui-modules.md` — UI-модули (по прототипу)
-6. `artifacts/thinking/📅 Лог разработки.md` — что уже сделано
+### Allure Report
+
+Локально:
+```bash
+allure serve allure-results
+```
+
+В CI: деплоится на GitHub Pages
+
+### Playwright Trace Viewer
+
+```bash
+playwright show-trace trace.zip
+```
+
+Trace автоматически сохраняется при failure (`--tracing=retain-on-failure`)
+
+### TMS Integration
+
+Маркируй тесты TMS ID:
+```python
+@pytest.mark.tms_id("TC-123")
+def test_login():
+    ...
+```
+
+`tms_reporter.py` распарсит JUnit и отправит статусы в TMS.
 
 ---
 
-> 💡 **Главный принцип**: AI — мощный инструмент, но не заменяет критическое мышление. Всегда проверяй сгенерированный код на соответствие требованиям и философии проекта («просто, дёшево, всё включено»).
+## ⚙️ Конфигурация
+
+### Environment variables (.env)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BASE_URL` | `http://localhost:3000` | App URL |
+| `API_BASE_URL` | Derived | API URL |
+| `BROWSER` | `chromium` | Browser type |
+| `HEADLESS` | `true` | Headless mode |
+| `TIMEOUT` | `30000` | Timeout ms |
+| `DB_HOST` | `localhost` | DB host |
+| `DB_PORT` | `5432` | DB port |
+| `DB_NAME` | `qa_test` | DB name |
+| `DB_USER` | `qa` | DB user |
+| `DB_PASSWORD` | `qa_pass` | DB pass |
+| `API_TOKEN` | — | API token |
+| `TMS_API_URL` | — | TMS URL |
+| `TMS_TOKEN` | — | TMS token |
+
+---
+
+## 🎯 Ключевые принципы
+
+1. **No Global State** — browser/context/page только через фикстуры
+2. **No time.sleep()** — Playwright auto-wait
+3. **Component-Based** — переиспользуемые компоненты
+4. **API First** — данные через API, не UI
+5. **Auto-Rollback** — DB транзакции откатываются
+6. **No Hardcoding** — factory_boy или параметризация
+7. **Strict Typing** — mypy --strict
+8. **CI Optimized** — shard-based parallelism
+
+---
+
+## 📈 Метрики
+
+| Metric | Target |
+|--------|--------|
+| Execution time | <10 min |
+| Flaky rate | <2% |
+| Coverage | >80% |
+| CI success | >95% |
+
+---
+
+## 🔗 Документы
+
+- [README.md](./README.md) — быстрый старт
+- [AGENTS.md](./AGENTS.md) — правила для AI
+- [pyproject.toml](./pyproject.toml) — зависимости
+- [.cursorrules](./.cursorrules) — AI code rules
+
+---
+
+> 💡 **Главный принцип**: Код должен запускаться без модификаций после `uv pip install .` && `pytest -x`.
