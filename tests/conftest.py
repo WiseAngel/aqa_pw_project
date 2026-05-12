@@ -40,6 +40,7 @@ def browser_type_launch_args(request: pytest.FixtureRequest) -> dict:
         return {"headless": headless}
     return {"headless": settings.headless}
 
+
 # Configure structlog for JSON logging in CI
 structlog.configure(
     processors=[
