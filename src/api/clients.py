@@ -8,6 +8,7 @@ and error handling.
 from typing import Any
 
 import httpx
+
 from src.config.settings import settings
 
 
