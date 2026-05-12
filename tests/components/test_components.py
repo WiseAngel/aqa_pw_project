@@ -11,23 +11,35 @@ class TestButtonComponent:
     """Тесты для компонента кнопки."""
 
     def test_button_exists(self, page: Page):
-        """Проверка существования кнопки на странице."""
+        """Проверка существования кнопки удаления задачи."""
         page.goto("https://demo.playwright.dev/todomvc")
 
-        # Ищем кнопку добавления задачи
-        button = page.locator('button[aria-label="Add"]')
-        expect(button).to_be_visible()
+        # Создаём задачу, чтобы появилась кнопка удаления
+        page.locator(".new-todo").fill("Задача для проверки кнопки")
+        page.locator(".new-todo").press("Enter")
+
+        # Наводим курсор, чтобы кнопка стала видимой (hover)
+        item = page.locator(".todo-list li").first
+        item.hover()
+
+        destroy_button = item.locator(".destroy")
+        expect(destroy_button).to_be_visible()
 
     def test_button_clickable(self, page: Page):
-        """Проверка кликабельности кнопки."""
+        """Проверка кликабельности кнопки удаления задачи."""
         page.goto("https://demo.playwright.dev/todomvc")
 
-        button = page.locator('button[aria-label="Add"]')
-        button.click()
+        page.locator(".new-todo").fill("Задача для удаления")
+        page.locator(".new-todo").press("Enter")
 
-        # После клика фокус должен остаться на поле ввода
-        input_field = page.locator(".new-todo")
-        expect(input_field).to_be_focused()
+        expect(page.locator(".todo-list li")).to_have_count(1)
+
+        item = page.locator(".todo-list li").first
+        item.hover()
+        item.locator(".destroy").click()
+
+        # После удаления список должен быть пустым
+        expect(page.locator(".todo-list li")).to_have_count(0)
 
 
 class TestFormComponent:
@@ -104,9 +116,8 @@ class TestNavigationComponent:
         # Переходим к активным
         page.locator('a[href="#/active"]').click()
 
-        # Должна остаться только одна активная задача
-        active_items = page.locator(".todo-list li.visible")
-        expect(active_items).to_have_count(1)
+        # В React TodoMVC выполненные задачи скрываются из DOM при фильтрации
+        expect(page.locator(".todo-list li")).to_have_count(1)
 
 
 class TestCheckboxComponent:
