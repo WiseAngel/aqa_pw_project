@@ -17,8 +17,8 @@ def test_homepage_loads(page: Page) -> None:
     from src.config.settings import settings
 
     page.goto(settings.base_url)
-    expect(page).to_have_title(re.compile(r".+"))  # Любой непустой заголовок
-    expect(page).to_have_url(settings.base_url)
+    expect(page).to_have_title(re.compile(r".+"))
+    expect(page).to_have_url(re.compile(re.escape(settings.base_url)))
 
 
 @pytest.mark.smoke
