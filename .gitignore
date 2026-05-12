@@ -1,4 +1,3 @@
-```
 # AI memory directory (except examples and templates)
 .ai/
 !.ai/memory/**/*.md
@@ -6,11 +5,12 @@
 # Logs and temp files
 *.log
 *.tmp
+*.swp
 
 # Environment (keep .env.example)
 .env
 .env.local
-.env.*
+*.env.*
 !.env.example
 
 # Editors
@@ -35,9 +35,15 @@ node_modules/
 dist/
 build/
 *.egg-info/
+src/*.egg-info/
 .coverage
 coverage/
 htmlcov/
+.mypy_cache/
+.pytest_cache/
+.tox/
+.cover/
+.nox/
 
 # Playwright artifacts
 playwright-report/
@@ -47,4 +53,3 @@ blob-report/
 # OS generated files
 .DS_Store
 Thumbs.db
-```

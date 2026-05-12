@@ -33,12 +33,20 @@ class Settings(BaseSettings):
     )
 
     # Application
-    base_url: str = "http://localhost:3000"
+    base_url: str = ""
     api_base_url: str | None = None
     headless: bool = True
     browser: str = "chromium"
     timeout: int = 30000
     slow_mo: int = 0
+
+    @field_validator("base_url", mode="before")
+    @classmethod
+    def set_default_base_url(cls, v: str) -> str:
+        """Set default base_url if empty or not provided."""
+        if not v:
+            return "http://localhost:3000"
+        return v
 
     # Database
     db_host: str = "localhost"

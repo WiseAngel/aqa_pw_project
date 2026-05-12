@@ -31,9 +31,17 @@ jobs:
 
       - name: Install dependencies
         run: pip install uv && uv pip install --system .
-      
+
       - name: Install Playwright browsers
-        run: python -m playwright install --with-deps chromium
+        run: playwright install --with-deps chromium
+
+      - name: Copy environment file and export variables
+        run: |
+          cp .env.example .env
+          set -a
+          source .env
+          set +a
+          echo "BASE_URL=${BASE_URL}" >> $GITHUB_ENV
 
       - name: Run tests (sharded)
         run: >
@@ -45,7 +53,7 @@ jobs:
           --reruns 2 --reruns-delay 3
           -m "e2e or api or smoke"
         env:
-          BASE_URL: ${{ secrets.BASE_URL }}
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_USER: ${{ secrets.DB_USER }}
@@ -80,10 +88,15 @@ jobs:
       
       - name: Generate Allure Report
         run: |
-          docker run \
-            -v ${{ github.workspace }}/artifacts/allure-results:/allure-results \
-            -v ${{ github.workspace }}/allure-report:/allure-report \
-            ghcr.io/allure-framework/allure2:2.30.0 allure generate --clean
+          docker pull ghcr.io/allure-framework/allure2:2.30.0 || true
+          if docker images ghcr.io/allure-framework/allure2:2.30.0 --format '{{.Repository}}' | grep -q allure; then
+            docker run \
+              -v ${{ github.workspace }}/artifacts/allure-results:/allure-results \
+              -v ${{ github.workspace }}/allure-report:/allure-report \
+              ghcr.io/allure-framework/allure2:2.30.0 allure generate --clean
+          else
+            echo "Allure Docker image not available, skipping report generation"
+          fi
       
       - name: Upload Allure Report
         uses: actions/upload-pages-artifact@v3
